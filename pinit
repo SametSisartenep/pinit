@@ -1,0 +1,34 @@
+#!/bin/bash
+
+PINFILE=~/.pinned
+
+if [ $# -lt 1 ];then
+	exit 1
+fi
+
+sedescape() {
+	echo $1 | sed -r 's/([\$\.\*\/\[\\^])/\\\1/g' | sed 's/[]]/\[]]/g'
+}
+
+case $1 in
+-s)
+	if [ $# -gt 1 ];then
+		head -$2 $PINFILE | tail -1 | cut -d';' -f1
+	else
+		cut -d';' -f2 $PINFILE | cat -n
+	fi
+;;
+-d)
+	url=$(sedescape `head -$2 $PINFILE | tail -1`)
+	sed -i "/^$url\s--\s.*/d" $PINFILE
+;;
+-n) wc -l $PINFILE | cut -d' ' -f1
+;;
+*)
+	if [[ -z $2 ]];then
+		echo "${1};No Description" >> $PINFILE
+	else
+		echo "${1};$2" >> $PINFILE
+	fi
+;;
+esac
