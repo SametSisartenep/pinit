@@ -19,8 +19,8 @@ case $1 in
 	fi
 ;;
 -d)
-	url=$(sedescape `head -$2 $PINFILE | tail -1`)
-	sed -i "/^$url\s--\s.*/d" $PINFILE
+	url=$(sedescape `head -$2 $PINFILE | tail -1 | cut -d';' -f1`)
+	sed -i "/^$url;.*/d" $PINFILE
 ;;
 -n) wc -l $PINFILE | cut -d' ' -f1
 ;;
