@@ -24,11 +24,13 @@ case $1 in
 ;;
 -n) wc -l $PINFILE | cut -d' ' -f1
 ;;
+-e) $EDITOR $PINFILE
+;;
 *)
 	if [[ -z $2 ]];then
-		echo "${1};No Description" >> $PINFILE
+		echo "${1};No Description" | tr -d '\n' >> $PINFILE
 	else
-		echo "${1};$2" >> $PINFILE
+		echo "${1};$2" | tr -d '\n' >> $PINFILE
 	fi
 ;;
 esac
