@@ -28,9 +28,9 @@ case $1 in
 ;;
 *)
 	if [[ -z $2 ]];then
-		echo "${1};No Description" | tr -d '\n' >> $PINFILE
+		echo "${1};No Description" | tr -d '\n' | sed 'a\' >> $PINFILE
 	else
-		echo "${1};$2" | tr -d '\n' >> $PINFILE
+		echo "${1};$2" | tr -d '\n' | sed 'a\' >> $PINFILE
 	fi
 ;;
 esac
