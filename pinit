@@ -10,6 +10,16 @@ sedescape() {
 	echo $1 | sed -r 's/([\$\.\*\/\[\\^])/\\\1/g' | sed 's/[]]/\[]]/g'
 }
 
+verintgrty() {
+	fcksum=$(sha1sum $1 | awk '{print $1}')
+	bcksum=$(sha1sum $2 | awk '{print $1}')
+
+	if [ $fcksum != $bcksum ];then
+		echo "Backup failed."
+		exit 2
+	fi
+}
+
 case $1 in
 -s)
 	if [ $# -gt 1 ];then
@@ -26,7 +36,10 @@ case $1 in
 ;;
 -e) $EDITOR $PINFILE
 ;;
--b) cp $PINFILE{,.bk} && echo "Done."
+-b)
+	cp $PINFILE{,.bk}
+	verintgrty $PINFILE{,.bk}
+	echo "Done."
 ;;
 *)
 	if [[ -z $2 ]];then
