@@ -2,10 +2,6 @@
 
 PINFILE=~/.pinned
 
-if [ $# -lt 1 ];then
-	exit 1
-fi
-
 sedescape() {
 	echo $1 | sed -r 's/([\$\.\*\/\[\\^])/\\\1/g' | sed 's/[]]/\[]]/g'
 }
@@ -15,37 +11,49 @@ verintgrty() {
 	bcksum=$(sha1sum $2 | awk '{print $1}')
 
 	if [ $fcksum != $bcksum ];then
-		echo "Backup failed."
+		echo Backup failed. >&2
 		exit 2
 	fi
 }
 
-case $1 in
--s)
-	if [ $# -gt 1 ];then
-		head -$2 $PINFILE | tail -1 | cut -d';' -f1
-	else
-		cut -d';' -f2 $PINFILE | cat -n
-	fi
-;;
--d)
-	url=$(sedescape `head -$2 $PINFILE | tail -1 | cut -d';' -f1`)
-	sed -i "/^$url;.*/d" $PINFILE
-;;
--n) wc -l $PINFILE | cut -d' ' -f1
-;;
--e) $EDITOR $PINFILE
-;;
--b)
-	cp $PINFILE{,.bk}
-	verintgrty $PINFILE{,.bk}
-	echo "Done."
-;;
-*)
-	if [[ -z $2 ]];then
+while getopts :s:d:neb option
+do
+	case $option in
+	s)
+		head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1
+	;;
+	d)
+		url=$(sedescape `head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1`)
+		sed -i "/^$url;.*/d" $PINFILE
+	;;
+	n) wc -l $PINFILE | cut -d' ' -f1
+	;;
+	e) $EDITOR $PINFILE
+	;;
+	b)
+		cp $PINFILE{,.bk}
+		verintgrty $PINFILE{,.bk}
+		echo Done.
+	;;
+	:)
+		if [ $OPTARG = s ];then
+			cut -d';' -f2 $PINFILE | cat -n
+		else
+			echo $OPTARG requires an argument. >&2
+			exit 3
+		fi
+	;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+if [ ! -z $1 ];then
+	if [ -z $2 ];then
 		echo "${1};No Description" | tr -d '\n' | sed 'a\' >> $PINFILE
 	else
 		echo "${1};$2" | tr -d '\n' | sed 'a\' >> $PINFILE
 	fi
-;;
-esac
+else
+	exit 1
+fi
+
