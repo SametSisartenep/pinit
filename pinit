@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PINFILE=~/.pinned
 
@@ -16,9 +16,9 @@ verintgrty() {
 	fi
 }
 
-while getopts :s:d:neb option
+while getopts :s:d:neb opt
 do
-	case $option in
+	case $opt in
 	s)
 		head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1
 	;;
@@ -31,8 +31,8 @@ do
 	e) $EDITOR $PINFILE
 	;;
 	b)
-		cp $PINFILE{,.bk}
-		verintgrty $PINFILE{,.bk}
+		cp $PINFILE $PINFILE.bk
+		verintgrty $PINFILE $PINFILE.bk
 		echo Done.
 	;;
 	:)
@@ -47,8 +47,8 @@ do
 done
 shift $(($OPTIND - 1))
 
-if [ ! -z $1 ];then
-	if [ -z $2 ];then
+if [ ! -z "$1" ];then
+	if [ -z "$2" ];then
 		echo "${1};No Description" | tr -d '\n' | sed 'a\' >> $PINFILE
 	else
 		echo "${1};$2" | tr -d '\n' | sed 'a\' >> $PINFILE
