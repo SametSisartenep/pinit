@@ -26,7 +26,7 @@ do
 		url=$(sedescape `head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1`)
 		sed -i "/^$url;.*/d" $PINFILE
 	;;
-	n) wc -l $PINFILE | cut -d' ' -f1
+	n) wc -l <$PINFILE
 	;;
 	e) $EDITOR $PINFILE
 	;;
