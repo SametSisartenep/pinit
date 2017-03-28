@@ -20,7 +20,7 @@ while getopts :s:d:neb opt
 do
 	case $opt in
 	s)
-		head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1
+		head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1 | tr -d '\n'
 	;;
 	d)
 		url=$(sedescape `head -$OPTARG $PINFILE | tail -1 | cut -d';' -f1`)
